@@ -9,7 +9,26 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({ Order }) {
       // define association here
-      this.hasMany(Order, { foreignKey: "productId" });
+      this.hasMany(Order, {
+        foreignKey: "productId",
+        hooks: {
+          this: this.beforeUpdate((product, options) => {
+            if (product.productStock < 1) {
+              product.productStatus = "Out of Stock";
+            } else {
+              product.productStatus = "Available";
+            }
+          }),
+          this: this.beforeCreate((product, options) => {
+            if (product.productStock < 1) {
+              product.productStatus = "Out of Stock";
+            } else {
+              product.productStatus = "Available";
+            }
+          }),
+        },
+        as: "order",
+      });
     }
   }
   Product.init(
@@ -36,7 +55,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       productStatus: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
     },
     {

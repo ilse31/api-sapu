@@ -2,7 +2,8 @@ const authController = require("../controllers/authController");
 const auth = require("../middleware/auth");
 const route = require("express").Router();
 const product = require("../controllers/productController");
-const uploa = require("../controllers/uploadController");
+const upload = require("../controllers/uploadController");
+const cart = require("../controllers/cartController");
 const order = require("../controllers/orderController");
 
 route.get("/", auth.verifyToken, (req, res) => {
@@ -25,11 +26,17 @@ route.put("/product/:id", product.updateProduct); //update product
 route.delete("/product/:id", product.deleteProduct); //delete product
 
 //! Order
-route.post("/order", order.buyProduct); //buy product
+route.post("/order", order.checkOut); //checkout
 route.get("/order", order.orderHistory); //order history
-route.post("/order/product", order.orderProduct); //order product
+route.post("/orders", order.bulkCheckOut); //bulk checkout
+
+//! Cart
+route.get("/cart", cart.getCart); //get cart
+route.post("/cart", cart.addToCart); //add to cart
+route.put("/cart/:id", cart.updateCart); //update cart
+route.delete("/cart/:id", cart.deleteCart); //delete cart
 
 //! Upload
-route.post("/upload", uploa.uploadFile); //upload image
+route.post("/upload", upload.uploadFile); //upload image
 
 module.exports = route;
